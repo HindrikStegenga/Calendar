@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Calendar2",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v10)
     ],
@@ -23,9 +24,6 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Calendar2",
-            dependencies: ["Calendar2ObjC"]),
-        .target(
-            name: "Calendar2ObjC",
             dependencies: ["OrderedDictionary", "OSCache"]),
         .target(
             name: "OrderedDictionary",
