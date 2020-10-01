@@ -31,6 +31,8 @@
 
 // functions to align coordinates on pixel boundaries
 
+#include <UIKit/UIKit.h>
+
 CGRect MGCAlignedRect(CGRect rect);
 CGRect MGCAlignedRectMake(CGFloat x, CGFloat y, CGFloat width, CGFloat height);
 CGSize MGCAlignedSize(CGSize size);
