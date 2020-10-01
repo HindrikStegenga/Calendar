@@ -1,3 +1,1 @@
-struct Calendar2 {
-    var text = "Hello, World!"
-}
+import Calendar2ObjC

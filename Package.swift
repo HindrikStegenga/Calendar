@@ -23,6 +23,15 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Calendar2",
+            dependencies: ["Calendar2ObjC"]),
+        .target(
+            name: "Calendar2ObjC",
+            dependencies: ["OrderedDictionary", "OSCache"]),
+        .target(
+            name: "OrderedDictionary",
+            dependencies: []),
+        .target(
+            name: "OSCache",
             dependencies: []),
         .testTarget(
             name: "Calendar2Tests",
