@@ -30,9 +30,9 @@
 
 #import <Foundation/Foundation.h>
 #import "MGCEventKitSupport.h"
+#import "private/UIAlertController+Showable.h"
 
-
-@interface MGCEventKitSupport ()<UIAlertViewDelegate>
+@interface MGCEventKitSupport ()
 
 @property (nonatomic) EKEvent* savedEvent;
 @property (nonatomic, copy) EventSaveCompletionBlockType saveCompletion;
@@ -107,8 +107,11 @@
 {
     NSString *title = NSLocalizedString(@"Warning", nil);
     NSString *msg = NSLocalizedString(@"Access to the calendar was not authorized", nil);
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
+    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle: UIAlertControllerStyleAlert];
+    
+    UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
+    [alertController addAction:cancel];
+    [alertController show];
 }
 
 - (void)saveEvent:(EKEvent*)event completion:(void (^)(BOOL saved))completion
@@ -119,9 +122,58 @@
         
         NSString *title = NSLocalizedString(@"This is a repeating event.", nil);
         NSString *msg = NSLocalizedString(@"What do you want to modify?", nil);
-        UIAlertView *sheet = [[UIAlertView alloc]initWithTitle:title message:msg delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:NSLocalizedString(@"This event only", nil), NSLocalizedString(@"All future events", nil), nil];
         
-        [sheet show];
+        UIAlertController* controller = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+        
+        UIAlertAction* currentEvent = [UIAlertAction actionWithTitle:NSLocalizedString(@"This event only", nil) style:UIAlertActionStyleDefault handler: ^void (UIAlertAction* action) {
+            
+            NSAssert(self.savedEvent, @"Saved event is nil");
+            
+            BOOL saved = NO;
+            EKSpan span = EKSpanThisEvent;
+            
+            NSError *error;
+            
+            saved = [self.eventStore saveEvent:self.savedEvent span:span commit:YES error:&error];
+            if (!saved) {
+                NSLog(@"Error - Could not save event: %@", error.description);
+            }
+            
+            if (self.saveCompletion != nil) {
+                self.saveCompletion(saved);
+            }
+            
+            self.saveCompletion = nil;
+            self.savedEvent = nil;
+            
+        }];
+        
+        UIAlertAction* allEvents = [UIAlertAction actionWithTitle:NSLocalizedString(@"All future events", nil) style:UIAlertActionStyleDefault handler:^void (UIAlertAction* action) {
+            NSAssert(self.savedEvent, @"Saved event is nil");
+            
+            BOOL saved = NO;
+            EKSpan span = EKSpanFutureEvents;
+            
+            NSError *error;
+            
+            saved = [self.eventStore saveEvent:self.savedEvent span:span commit:YES error:&error];
+            if (!saved) {
+                NSLog(@"Error - Could not save event: %@", error.description);
+            }
+            
+            if (self.saveCompletion != nil) {
+                self.saveCompletion(saved);
+            }
+            
+            self.saveCompletion = nil;
+            self.savedEvent = nil;
+        }];
+        
+        [controller addAction:cancelAction];
+        [controller addAction:currentEvent];
+        [controller addAction:allEvents];
+        [controller show];
     }
     else {
         NSError *error;
@@ -136,41 +188,6 @@
         }
         self.saveCompletion = nil;
     }
-}
-
-#pragma mark - UIAlertViewDelegate
-
-// Called when a button is clicked. The view will be automatically dismissed after this call returns
-- (void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    NSAssert(self.savedEvent, @"Saved event is nil");
-    
-    BOOL saved = NO;
-    
-    if (buttonIndex != 0) {
-        EKSpan span = EKSpanThisEvent;
-        
-        if (buttonIndex == 1) {
-            span = EKSpanThisEvent;
-        }
-        else if (buttonIndex == 2) {
-            span = EKSpanFutureEvents;
-        }
-        
-        NSError *error;
-        
-        saved = [self.eventStore saveEvent:self.savedEvent span:span commit:YES error:&error];
-        if (!saved) {
-            NSLog(@"Error - Could not save event: %@", error.description);
-        }
-    }
-    
-    if (self.saveCompletion != nil) {
-        self.saveCompletion(saved);
-    }
-    
-    self.saveCompletion = nil;
-    self.savedEvent = nil;
 }
 
 @end

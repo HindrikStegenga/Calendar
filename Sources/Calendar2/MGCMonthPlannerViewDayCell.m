@@ -71,6 +71,7 @@ static const CGFloat kDotSize = 8;
 
 - (void)prepareForReuse
 {
+    [super prepareForReuse];
     self.showsDot = NO;
 }
 

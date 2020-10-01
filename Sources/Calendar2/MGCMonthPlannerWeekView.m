@@ -69,10 +69,6 @@
     return (hitView == self) ? nil : hitView;
 }
 
-- (void)prepareForReuse
-{
-}
-
 - (void)layoutSubviews
 {
 	[super layoutSubviews];

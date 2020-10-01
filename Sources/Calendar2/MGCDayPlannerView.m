@@ -1566,7 +1566,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
         [self.timedEventsView reloadData];
 		
         MGCTimedEventsViewLayoutInvalidationContext *context = [MGCTimedEventsViewLayoutInvalidationContext new];
-        context.invalidatedSections = [NSIndexSet indexSetWithIndex:section];
+        context.invalidatedSections = (NSMutableIndexSet*)[NSIndexSet indexSetWithIndex:section];
         [self.timedEventsView.collectionViewLayout invalidateLayoutWithContext:context];
 
 		[self refreshEventMarkForColumnAtDate:date];
@@ -1579,7 +1579,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
     [self.dimmedTimeRangesCache removeAllObjects];
     
     MGCTimedEventsViewLayoutInvalidationContext *context = [MGCTimedEventsViewLayoutInvalidationContext new];
-    context.invalidatedSections = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.numberOfLoadedDays)];
+    context.invalidatedSections = (NSMutableIndexSet*)[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.numberOfLoadedDays)];
     context.invalidateEventCells = NO;
     context.invalidateDimmingViews = YES;
     [self.timedEventsView.collectionViewLayout invalidateLayoutWithContext:context];
@@ -1923,7 +1923,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
         
         NSUInteger hiddenCount = [self.allDayEventsViewLayout numberOfHiddenEventsInSection:indexPath.section];
         UILabel *label = [[UILabel alloc]initWithFrame:view.bounds];
-        label.text = [NSString stringWithFormat:NSLocalizedString(@"%d more...", nil), hiddenCount];
+        label.text = [NSString stringWithFormat:NSLocalizedString(@"%lu more...", nil), (unsigned long)hiddenCount];
         label.textColor = [UIColor blackColor];
         label.font = [UIFont systemFontOfSize:11];
         label.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;

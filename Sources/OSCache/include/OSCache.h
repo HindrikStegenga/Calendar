@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSUInteger count;
 @property (nonatomic, readonly) NSUInteger totalCost;
 
-- (id)objectForKeyedSubscript:(KeyType <NSCopying>)key;
+- (_Nullable id)objectForKeyedSubscript:(KeyType <NSCopying>)key;
 - (void)setObject:(ObjectType)obj forKeyedSubscript:(KeyType <NSCopying>)key;
 - (void)enumerateKeysAndObjectsUsingBlock:(void (^)(KeyType key, ObjectType obj, BOOL *stop))block;
 
