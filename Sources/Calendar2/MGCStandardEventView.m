@@ -73,7 +73,10 @@ static CGFloat kSpace = 2;
 	
 	UIFont *boldFont = [UIFont fontWithDescriptor:[[self.font fontDescriptor] fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold] size:self.font.pointSize];
 	NSMutableAttributedString *as = [[NSMutableAttributedString alloc]initWithString:s attributes:@{NSFontAttributeName: boldFont ?: self.font }];
-	
+    
+    [as addAttribute:NSStrokeColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0,[as length])];
+    [as addAttribute:NSStrokeWidthAttributeName value:[NSNumber numberWithInt:-1] range:NSMakeRange(0,[as length])];
+    
 	if (self.subtitle && self.subtitle.length > 0 && self.style & MGCStandardEventViewStyleSubtitle) {
 		NSMutableString *s  = [NSMutableString stringWithFormat:@"\n%@", self.subtitle];
 		NSMutableAttributedString *subtitle = [[NSMutableAttributedString alloc]initWithString:s attributes:@{NSFontAttributeName:self.font}];
@@ -90,8 +93,8 @@ static CGFloat kSpace = 2;
 	NSTextTab *t = [[NSTextTab alloc]initWithTextAlignment:NSTextAlignmentRight location:rect.size.width options:[[NSDictionary alloc] init]];
 	NSMutableParagraphStyle *style = [NSMutableParagraphStyle new];
 	style.tabStops = @[t];
-	//style.hyphenationFactor = .4;
-	//style.lineBreakMode = NSLineBreakByTruncatingMiddle;
+	
+	
 	[as addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, as.length)];
 	
 	UIColor *color = self.selected ? [UIColor whiteColor] : self.color;
